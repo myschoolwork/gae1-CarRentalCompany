@@ -11,15 +11,26 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 import ds.gae.ReservationException;
 
+@Entity
 public class CarRentalCompany {
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
+	@Id
 	private String name;
+	
+	@OneToMany(cascade = CascadeType.ALL)
 	private Set<Car> cars;
-	private Map<String,CarType> carTypes = new HashMap<String, CarType>();
+	//private Map<String,CarType> carTypes = new HashMap<String, CarType>();
+	//@OneToMany(cascade = CascadeType.ALL) // TODO
+	//private Set<CarType> carTypes = new HashSet<>();
 
 	/***************
 	 * CONSTRUCTOR *
@@ -29,8 +40,8 @@ public class CarRentalCompany {
 		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
 		setName(name);
 		this.cars = cars;
-		for(Car car:cars)
-			carTypes.put(car.getType().getName(), car.getType());
+		//for(Car car:cars)
+		//	carTypes.add(car.getType());
 	}
 
 	/********
@@ -50,19 +61,29 @@ public class CarRentalCompany {
 	 *************/
 
 	public Collection<CarType> getAllCarTypes() {
-		return carTypes.values();
+		Set<CarType> types = new HashSet<>();
+		for (Car car : cars) {
+			types.add(car.getType());
+		}
+		return types;
 	}
 	
 	public CarType getCarType(String carTypeName) {
-		if(carTypes.containsKey(carTypeName))
-			return carTypes.get(carTypeName);
+		for(CarType type : getAllCarTypes()) {
+			if (type.getName().equals(carTypeName)) {
+				return type;
+			}
+		}
 		throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
 	}
 	
 	public boolean isAvailable(String carTypeName, Date start, Date end) {
 		logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
-		if(carTypes.containsKey(carTypeName))
-			return getAvailableCarTypes(start, end).contains(carTypes.get(carTypeName));
+		for (CarType type : getAllCarTypes()) {
+			if(type.getName().equals(carTypeName)) {
+				return getAvailableCarTypes(start, end).contains(type);
+			}
+		}
 		throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
 	}
 	

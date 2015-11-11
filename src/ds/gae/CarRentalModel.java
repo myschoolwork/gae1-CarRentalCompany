@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
@@ -45,8 +48,16 @@ public class CarRentalModel {
      * @return	the list of car rental companies
      */
     public Collection<String> getAllRentalCompanyNames() {
-		// FIXME use persistence instead
-    	return CRCS.keySet();
+		// FIXEDME use persistence instead
+    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		try {
+			Query q = em.createQuery("SELECT c.name FROM " + CarRentalCompany.class.getName() + " c" );
+			return q.getResultList();
+		}
+		finally {
+			em.close();
+		}
+    	//return CRCS.keySet();
     }
 	
 	/**
@@ -118,9 +129,9 @@ public class CarRentalModel {
 	 * @return	the list of reservations of the given car renter
 	 */
 	public List<Reservation> getReservations(String renter) {
-		// FIXME: use persistence instead
+		// FIXEDME: use persistence instead
 		
-		List<Reservation> out = new ArrayList<Reservation>();
+		/*List<Reservation> out = new ArrayList<Reservation>();
 		
     	for (CarRentalCompany crc : CRCS.values()) {
     		for (Car c : crc.getCars()) {
@@ -132,7 +143,19 @@ public class CarRentalModel {
     		}
     	}
     	
-    	return out;
+    	return out;*/
+    	
+    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		try {
+			Query q = em.createQuery("SELECT r "
+					+ "FROM Reservation r "
+					+ "WHERE r.carRenter LIKE :renter")
+				.setParameter("renter", renter);
+			return q.getResultList();
+		}
+		finally {
+			em.close();
+		}
     }
 
     /**
@@ -143,11 +166,24 @@ public class CarRentalModel {
      * @return	The list of car types in the given car rental company.
      */
     public Collection<CarType> getCarTypesOfCarRentalCompany(String crcName) {
-		// FIXME: use persistence instead
+		// FIXEDME: use persistence instead
+    	
+    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		try {
+			Query q = em.createQuery("SELECT ct "
+					+ "FROM CarRentalCompany c, IN(c.carTypes) ct "
+					+ "WHERE c.name LIKE :crcName")
+				.setParameter("crcName", crcName);
+			return q.getResultList();
+			//return CarRentalModel.get().CRCS.containsKey("Hertz");
+		}
+		finally {
+			em.close();
+		}
 
-    	CarRentalCompany crc = CRCS.get(crcName);
+    	/*CarRentalCompany crc = CRCS.get(crcName);
     	Collection<CarType> out = new ArrayList<CarType>(crc.getAllCarTypes());
-        return out;
+        return out;*/
     }
 	
     /**
@@ -190,9 +226,22 @@ public class CarRentalModel {
 	 * @return	List of cars of the given car type
 	 */
 	private List<Car> getCarsByCarType(String crcName, CarType carType) {				
-		// FIXME: use persistence instead
+		// FIXEDME: use persistence instead
+		
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
+		try {
+			Query q = em.createQuery("SELECT c "
+					+ "FROM Car c "
+					+ "WHERE c.type = :type" )
+				.setParameter("type", carType);
+			return q.getResultList();
+			//return CarRentalModel.get().CRCS.containsKey("Hertz");
+		}
+		finally {
+			em.close();
+		}
 
-		List<Car> out = new ArrayList<Car>(); 
+		/*List<Car> out = new ArrayList<Car>(); 
 		for(CarRentalCompany crc : CRCS.values()) {
 			for (Car c : crc.getCars()) {
 				if (c.getType() == carType) { 
@@ -200,7 +249,7 @@ public class CarRentalModel {
 				}
 			}
 		}
-		return out;
+		return out;*/
 	}
 
 	/**

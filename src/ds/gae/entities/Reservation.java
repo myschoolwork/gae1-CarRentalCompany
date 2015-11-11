@@ -1,7 +1,19 @@
 package ds.gae.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import com.google.appengine.api.datastore.Key;
+
+@Entity
 public class Reservation extends Quote {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Key id;
+	
     private int carId;
     
     /***************
