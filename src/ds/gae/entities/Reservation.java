@@ -1,5 +1,7 @@
 package ds.gae.entities;
 
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,7 @@ import javax.persistence.Id;
 import com.google.appengine.api.datastore.Key;
 
 @Entity
+@Inheritance(strategy = InheritanceStrategy.SUBCLASS_TABLE) //everything of Quote is put in the Reservation's table
 public class Reservation extends Quote {
 
 	@Id

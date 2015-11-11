@@ -30,6 +30,11 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		if(!isDummyDataAvailable()) {
 			addDummyData();
 		}
+		
+		// Some debug info. It also tests some functions.
+		System.out.println("Companies: " + CarRentalModel.get().getAllRentalCompanyNames());
+		System.out.println("Types of Hertz: " + CarRentalModel.get().getCarTypesNames("Hertz"));
+		System.out.println("Types of Dockx: " + CarRentalModel.get().getCarTypesNames("Dockx"));
 	}
 	
 	private boolean isDummyDataAvailable() {
@@ -56,7 +61,6 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
-        	
             Set<Car> cars = loadData(name, datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             
@@ -74,7 +78,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	}
 	
 	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
-		// FIXME: adapt the implementation of this method to your entity structure
+		// FIXEDME: adapt the implementation of this method to your entity structure
 		
 		Set<Car> cars = new HashSet<Car>();
 		int carId = 1;

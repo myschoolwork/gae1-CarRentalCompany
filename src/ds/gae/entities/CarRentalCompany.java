@@ -16,6 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.google.appengine.datanucleus.annotations.Unowned;
+
 import ds.gae.ReservationException;
 
 @Entity
@@ -29,8 +31,9 @@ public class CarRentalCompany {
 	@OneToMany(cascade = CascadeType.ALL)
 	private Set<Car> cars;
 	//private Map<String,CarType> carTypes = new HashMap<String, CarType>();
-	//@OneToMany(cascade = CascadeType.ALL) // TODO
-	//private Set<CarType> carTypes = new HashSet<>();
+	@Unowned
+	@OneToMany(cascade = CascadeType.PERSIST)
+	private Set<CarType> carTypes = new HashSet<>();
 
 	/***************
 	 * CONSTRUCTOR *
@@ -40,8 +43,11 @@ public class CarRentalCompany {
 		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
 		setName(name);
 		this.cars = cars;
-		//for(Car car:cars)
-		//	carTypes.add(car.getType());
+		for(Car car:cars) {
+			if (!carTypes.contains(car.getType())) {
+				carTypes.add(car.getType());
+			}
+		}
 	}
 
 	/********

@@ -13,15 +13,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 
 @Entity
 public class Car {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Key id;
+	private Key key;
+	
+    private int id;
     
-	@ManyToOne(cascade = CascadeType.ALL)
+	@Unowned
+	//@ManyToOne(cascade = CascadeType.ALL)
 	private CarType type;
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Reservation> reservations;
@@ -31,7 +35,7 @@ public class Car {
      ***************/
     
     public Car(int uid, CarType type) {
-    	//this.id = uid; TODO remove uid paramter
+    	this.id = uid;
         this.type = type;
         this.reservations = new HashSet<Reservation>();
     }
@@ -41,7 +45,7 @@ public class Car {
      ******/
     
     public int getId() {
-    	return (int)id.getId(); // TODO return long
+    	return id;
     }
     
     /************
