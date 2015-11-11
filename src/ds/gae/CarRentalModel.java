@@ -28,6 +28,12 @@ public class CarRentalModel {
 			instance = new CarRentalModel();
 		return instance;
 	}
+	
+	private CarRentalCompany getCompany(String crcName, EntityManager em) {
+		Query q = em.createQuery("SELECT c FROM " + CarRentalCompany.class.getName() + " c WHERE c.name = :crcName", CarRentalCompany.class)
+				.setParameter("crcName", crcName);
+		return (CarRentalCompany)q.getSingleResult();
+	}
 		
 	/**
 	 * Get the car types available in the given car rental company.
@@ -170,14 +176,18 @@ public class CarRentalModel {
     	
     	EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
-			Query q = em.createQuery("SELECT carTypes "
+			/*Query q = em.createQuery("SELECT carTypes "
 					+ "FROM CarRentalCompany c "
 					+ "WHERE c.name = :crcName",
 					CarType.class)
 				.setParameter("crcName", crcName);
-			Collection<CarType> result = (Collection<CarType>)q.getResultList();
-			System.out.println("--- Found result for getCarTypesOfCarRentalCompany: " + result.getClass().getName() + " : " + result.toString());
-			return q.getResultList();
+			return q.getResultList();*/
+			// TODO More JPQL-ish?
+			/*Query q = em.createQuery("SELECT c FROM CarRentalCompany c WHERE c.name = :crcName", CarRentalCompany.class)
+				.setParameter("crcName", crcName);
+			CarRentalCompany company = (CarRentalCompany)q.getSingleResult();*/
+			return getCompany(crcName, em).getAllCarTypes();
+			
 			//return CarRentalModel.get().CRCS.containsKey("Hertz");
 		}
 		finally {
@@ -233,11 +243,8 @@ public class CarRentalModel {
 		
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
-			Query q = em.createQuery("SELECT c "
-					+ "FROM CarType t, IN(t.cars) c "
-					+ "WHERE t = :type" )
-				.setParameter("type", carType);
-			return q.getResultList();
+			CarRentalCompany company = getCompany(crcName, em);
+			return company.get(carType.getName());
 			//return CarRentalModel.get().CRCS.containsKey("Hertz");
 		}
 		finally {

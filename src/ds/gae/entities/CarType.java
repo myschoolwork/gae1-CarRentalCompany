@@ -1,7 +1,9 @@
 package ds.gae.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -27,7 +29,7 @@ public class CarType {
     private float trunkSpace;
     
     @OneToMany(cascade = CascadeType.ALL)
-    private Collection<Car> cars = new HashSet<>();
+    private List<Car> cars = new ArrayList<>();
     
     /***************
 	 * CONSTRUCTOR *
@@ -67,7 +69,7 @@ public class CarType {
     	cars.add(car);
     }
     
-    public Collection<Car> getCars() {
+    public List<Car> getCars() {
     	return cars;
     }
     
@@ -107,7 +109,7 @@ public class CarType {
 	}
 
 	// Needed for GAE
-	/*public void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -126,8 +128,4 @@ public class CarType {
 	public void setTrunkSpace(float trunkSpace) {
 		this.trunkSpace = trunkSpace;
 	}
-
-	public void setCars(Collection<Car> cars) {
-		this.cars = cars;
-	}*/
 }
