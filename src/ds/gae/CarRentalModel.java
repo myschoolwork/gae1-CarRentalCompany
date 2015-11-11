@@ -215,10 +215,6 @@ public class CarRentalModel {
 		finally {
 			em.close();
 		}
-
-    	/*CarRentalCompany crc = CRCS.get(crcName);
-    	Collection<CarType> out = new ArrayList<CarType>(crc.getAllCarTypes());
-        return out;*/
     }
 	
     /**
