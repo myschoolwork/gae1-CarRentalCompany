@@ -57,8 +57,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
         	
-            Set<Car> cars = loadData(name, datafile);
-            CarRentalCompany company = new CarRentalCompany(name, cars);
+            CarRentalCompany company = new CarRentalCompany(name, loadData(name, datafile));
             
     		// FIXEDME: use persistence instead
             em.persist(company);
@@ -73,12 +72,11 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		}
 	}
 	
-	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
+	public static Set<CarType> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		// FIXME: adapt the implementation of this method to your entity structure
 		
-		Set<Car> cars = new HashSet<Car>();
-		int carId = 1;
-
+		Set<CarType> types = new HashSet<>();
+		
 		//open file from jar
 		BufferedReader in = new BufferedReader(new InputStreamReader(CarRentalServletContextListener.class.getClassLoader().getResourceAsStream(datafile)));
 		//while next line exists
@@ -99,11 +97,12 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Boolean.parseBoolean(csvReader.nextToken()));
 			//create N new cars with given type, where N is the 5th field
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-				cars.add(new Car(carId++, type));
+				type.addCar(new Car());
 			}
+			types.add(type);
 		}
 
-		return cars;
+		return types;
 	}
 
 	@Override

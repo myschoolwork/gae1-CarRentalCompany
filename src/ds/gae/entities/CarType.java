@@ -1,9 +1,14 @@
 package ds.gae.entities;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -21,9 +26,14 @@ public class CarType {
     //trunk space in liters
     private float trunkSpace;
     
+    @OneToMany(cascade = CascadeType.ALL)
+    private Collection<Car> cars = new HashSet<>();
+    
     /***************
 	 * CONSTRUCTOR *
 	 ***************/
+    
+    public CarType() {}
     
     public CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
         this.name = name;
@@ -53,6 +63,14 @@ public class CarType {
     	return trunkSpace;
     }
     
+    public void addCar(Car car) {
+    	cars.add(car);
+    }
+    
+    public Collection<Car> getCars() {
+    	return cars;
+    }
+    
     /*************
      * TO STRING *
      *************/
@@ -67,7 +85,7 @@ public class CarType {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
 		return result;
 	}
 
@@ -80,11 +98,36 @@ public class CarType {
 		if (getClass() != obj.getClass())
 			return false;
 		CarType other = (CarType) obj;
-		if (name == null) {
-			if (other.name != null)
+		if (getName() == null) {
+			if (other.getName() != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!getName().equals(other.getName()))
 			return false;
 		return true;
 	}
+
+	// Needed for GAE
+	/*public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setNbOfSeats(int nbOfSeats) {
+		this.nbOfSeats = nbOfSeats;
+	}
+
+	public void setSmokingAllowed(boolean smokingAllowed) {
+		this.smokingAllowed = smokingAllowed;
+	}
+
+	public void setRentalPricePerDay(double rentalPricePerDay) {
+		this.rentalPricePerDay = rentalPricePerDay;
+	}
+
+	public void setTrunkSpace(float trunkSpace) {
+		this.trunkSpace = trunkSpace;
+	}
+
+	public void setCars(Collection<Car> cars) {
+		this.cars = cars;
+	}*/
 }

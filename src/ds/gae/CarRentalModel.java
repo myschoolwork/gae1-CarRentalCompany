@@ -170,10 +170,13 @@ public class CarRentalModel {
     	
     	EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
-			Query q = em.createQuery("SELECT ct "
-					+ "FROM CarRentalCompany c, IN(c.carTypes) ct "
-					+ "WHERE c.name LIKE :crcName")
+			Query q = em.createQuery("SELECT carTypes "
+					+ "FROM CarRentalCompany c "
+					+ "WHERE c.name = :crcName",
+					CarType.class)
 				.setParameter("crcName", crcName);
+			Collection<CarType> result = (Collection<CarType>)q.getResultList();
+			System.out.println("--- Found result for getCarTypesOfCarRentalCompany: " + result.getClass().getName() + " : " + result.toString());
 			return q.getResultList();
 			//return CarRentalModel.get().CRCS.containsKey("Hertz");
 		}
@@ -231,8 +234,8 @@ public class CarRentalModel {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			Query q = em.createQuery("SELECT c "
-					+ "FROM Car c "
-					+ "WHERE c.type = :type" )
+					+ "FROM CarType t, IN(t.cars) c "
+					+ "WHERE t = :type" )
 				.setParameter("type", carType);
 			return q.getResultList();
 			//return CarRentalModel.get().CRCS.containsKey("Hertz");

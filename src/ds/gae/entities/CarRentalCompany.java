@@ -2,11 +2,9 @@ package ds.gae.entities;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,21 +25,16 @@ public class CarRentalCompany {
 	private String name;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	private Set<Car> cars;
-	//private Map<String,CarType> carTypes = new HashMap<String, CarType>();
-	//@OneToMany(cascade = CascadeType.ALL) // TODO
-	//private Set<CarType> carTypes = new HashSet<>();
+	private Set<CarType> carTypes = new HashSet<>();
 
 	/***************
 	 * CONSTRUCTOR *
 	 ***************/
 
-	public CarRentalCompany(String name, Set<Car> cars) {
+	public CarRentalCompany(String name, Set<CarType> carTypes) {
 		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
 		setName(name);
-		this.cars = cars;
-		//for(Car car:cars)
-		//	carTypes.add(car.getType());
+		this.carTypes = carTypes;
 	}
 
 	/********
@@ -59,13 +52,13 @@ public class CarRentalCompany {
 	/*************
 	 * CAR TYPES *
 	 *************/
-
+	
+	public void setCarTypes(Set<CarType> carTypes) {
+		this.carTypes = carTypes;
+	}
+	
 	public Collection<CarType> getAllCarTypes() {
-		Set<CarType> types = new HashSet<>();
-		for (Car car : cars) {
-			types.add(car.getType());
-		}
-		return types;
+		return carTypes;
 	}
 	
 	public CarType getCarType(String carTypeName) {
@@ -89,9 +82,12 @@ public class CarRentalCompany {
 	
 	public Set<CarType> getAvailableCarTypes(Date start, Date end) {
 		Set<CarType> availableCarTypes = new HashSet<CarType>();
-		for (Car car : cars) {
-			if (car.isAvailable(start, end)) {
-				availableCarTypes.add(car.getType());
+		for (CarType type : carTypes) {
+			for (Car car : type.getCars()) {
+				if (car.isAvailable(start, end)) {
+					availableCarTypes.add(type);
+					continue;
+				}
 			}
 		}
 		return availableCarTypes;
@@ -102,22 +98,32 @@ public class CarRentalCompany {
 	 *********/
 	
 	private Car getCar(int uid) {
-		for (Car car : cars) {
-			if (car.getId() == uid)
-				return car;
+		for (CarType type : carTypes) {
+			for (Car car : type.getCars()) {
+				if (car.getId() == uid)
+					return car;
+			}
 		}
 		throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
 	}
 	
 	public Set<Car> getCars() {
+		Set<Car> cars = new HashSet<>();
+		for (CarType type : carTypes) {
+			cars.addAll(type.getCars());
+		}
     	return cars;
     }
 	
 	private List<Car> getAvailableCars(String carType, Date start, Date end) {
 		List<Car> availableCars = new LinkedList<Car>();
-		for (Car car : cars) {
-			if (car.getType().getName().equals(carType) && car.isAvailable(start, end)) {
-				availableCars.add(car);
+		for (CarType type : carTypes) {
+			if (type.getName().equals(carType)) {
+				for (Car car : type.getCars()) {
+					if (car.isAvailable(start, end)) {
+						availableCars.add(car);
+					}
+				}
 			}
 		}
 		return availableCars;
