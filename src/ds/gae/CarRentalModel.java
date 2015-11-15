@@ -131,6 +131,7 @@ public class CarRentalModel {
 		try {
 			CarRentalCompany crc =  getCompany(q.getRentalCompany(), em);
 	    	crc.confirmQuote(q);
+	    	em.persist(crc);
 		}
 		finally {
 			em.close();
@@ -150,6 +151,7 @@ public class CarRentalModel {
 	 */
     public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
 		// TODO add implementation
+    	System.out.println("--- confirmQuotes");
     	return null;
     }
 	
