@@ -51,7 +51,7 @@ public enum JSPSite {
 	
 	public static JSPSite[] publiclyLinkedValues(boolean onlyPersTest) {
 		if (onlyPersTest) {
-			return new JSPSite[] { PERSIST_TEST };
+			return new JSPSite[] { PERSIST_TEST_SERVLET };
 		}
 		
 		Vector<JSPSite> out = new Vector<JSPSite>();

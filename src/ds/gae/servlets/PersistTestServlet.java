@@ -1,5 +1,6 @@
 package ds.gae.servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -27,12 +28,17 @@ public class PersistTestServlet extends HttpServlet {
 		req.getSession().setAttribute("renter", userName);
 		
 		try {
-			ReservationConstraints c = new ReservationConstraints(
-					ViewTools.DATE_FORMAT.parse("01.02.2011"), 
-					ViewTools.DATE_FORMAT.parse("01.03.2011"), "Compact");
-		
-			final Quote q = CarRentalModel.get().createQuote(companyName, userName, c);
-			CarRentalModel.get().confirmQuote(q);
+			boolean fullApplicationDeployed = new File(getServletContext().getRealPath(JSPSite.CREATE_QUOTES.url())).exists();
+			
+			if (CarRentalModel.get().getReservations(userName).size() == 0 && !fullApplicationDeployed) {
+
+				ReservationConstraints c = new ReservationConstraints(
+						ViewTools.DATE_FORMAT.parse("01.02.2011"), 
+						ViewTools.DATE_FORMAT.parse("01.03.2011"), "Compact");
+			
+				final Quote q = CarRentalModel.get().createQuote(companyName, userName, c);
+				CarRentalModel.get().confirmQuote(q);
+			}
 			
 			resp.sendRedirect(JSPSite.PERSIST_TEST.url());
 		} catch (ParseException e) {

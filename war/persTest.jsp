@@ -57,7 +57,7 @@ for (JSPSite site : JSPSite.publiclyLinkedValues(onlyPersTest)) {
 				</ul>
 		</div>
 		<div id="contentWrapper">
-<% if (currentSite != JSPSite.LOGIN) { %>
+<% if (currentSite != JSPSite.LOGIN && !onlyPersTest) { %>
 			<div id="userProfile">
 				<span>Logged-in as <%= renter %> (<a href="/login.jsp">change</a>)</span>
 			</div>
