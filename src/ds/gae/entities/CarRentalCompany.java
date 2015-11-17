@@ -124,6 +124,16 @@ public class CarRentalCompany {
     	return cars.keySet();
     }
 	
+	public List<Car> getCars(String carType) {
+		List<Car> carsOfType = new LinkedList<Car>();
+		for (Car car : cars.keySet()) {
+			if (cars.get(car).getName().equals(carType)) {
+				carsOfType.add(car);
+			}
+		}
+		return carsOfType;
+	}
+	
 	private List<Car> getAvailableCars(String carType, Date start, Date end) {
 		List<Car> availableCars = new LinkedList<Car>();
 		for (Car car : cars.keySet()) {
