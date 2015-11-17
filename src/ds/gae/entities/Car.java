@@ -9,11 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.annotations.Unowned;
 
 @Entity
 public class Car {
@@ -24,8 +22,7 @@ public class Car {
 
     private int id;
     
-    @Unowned
-    private CarType type;
+    //private CarType type;
     
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Reservation> reservations;
@@ -34,9 +31,9 @@ public class Car {
      * CONSTRUCTOR *
      ***************/
     
-    public Car(int uid, CarType type) {
+    public Car(int uid/*, CarType type*/) {
     	this.id = uid;
-    	this.type = type;
+    	//this.type = type;
         this.reservations = new HashSet<Reservation>();
     }
 
@@ -52,9 +49,9 @@ public class Car {
      * CAR TYPE *
      ************/
     
-    public CarType getType() {
+    /*public CarType getType() {
         return type;
-    }
+    }*/
 
     /****************
      * RESERVATIONS *

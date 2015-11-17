@@ -194,11 +194,11 @@ public class CarRentalModel {
 
 		List<Car> out = new ArrayList<Car>(); 
 		for(CarRentalCompany crc : CRCS.values()) {
-			for (Car c : crc.getCars()) {
+			/*for (Car c : crc.getCars()) {
 				if (c.getType() == carType) { 
 					out.add(c);
 				}
-			}
+			}*/
 		}
 		return out;
 	}

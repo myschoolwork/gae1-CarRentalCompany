@@ -3,8 +3,8 @@ package ds.gae.listener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +59,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
         	
-            Set<Car> cars = loadData(name, datafile);
+			Map<Car,CarType> cars = loadData(name, datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             
     		// FIXEDME: use persistence instead
@@ -76,10 +76,10 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		}
 	}
 	
-	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
+	public static Map<Car,CarType> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		// FIXME: adapt the implementation of this method to your entity structure
 		
-		Set<Car> cars = new HashSet<Car>();
+		Map<Car,CarType> cars = new HashMap<>();
 		int carId = 1;
 
 		//open file from jar
@@ -102,7 +102,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Boolean.parseBoolean(csvReader.nextToken()));
 			//create N new cars with given type, where N is the 5th field
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-				cars.add(new Car(carId++, type));
+				cars.put(new Car(carId++/*, type*/), type);
 			}
 		}
 
