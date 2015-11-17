@@ -14,7 +14,6 @@ import javax.persistence.Query;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import ds.gae.CarRentalModel;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
@@ -77,7 +76,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	}
 	
 	public static Map<Car,CarType> loadData(String name, String datafile) throws NumberFormatException, IOException {
-		// FIXME: adapt the implementation of this method to your entity structure
+		// FIXEDME: adapt the implementation of this method to your entity structure
 		
 		Map<Car,CarType> cars = new HashMap<>();
 		int carId = 1;
