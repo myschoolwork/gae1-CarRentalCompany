@@ -129,6 +129,7 @@ public class CarRentalModel {
 		try {
 			CarRentalCompany crc =  getCompany(q.getRentalCompany(), em);
 	    	crc.confirmQuote(q);
+	    	tx.commit();
 		}
 		finally {
 			if (tx.isActive()) {

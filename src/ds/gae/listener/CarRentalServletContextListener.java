@@ -3,7 +3,9 @@ package ds.gae.listener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -17,6 +19,7 @@ import javax.servlet.ServletContextListener;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
+import ds.gae.entities.CarTypeCarMapping;
 
 public class CarRentalServletContextListener implements ServletContextListener {
 
@@ -58,7 +61,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
         	
-			Map<Car,CarType> cars = loadData(name, datafile);
+			List<CarTypeCarMapping> cars = loadData(name, datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             
     		// FIXEDME: use persistence instead
@@ -75,10 +78,10 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		}
 	}
 	
-	public static Map<Car,CarType> loadData(String name, String datafile) throws NumberFormatException, IOException {
+	public static List<CarTypeCarMapping> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		// FIXEDME: adapt the implementation of this method to your entity structure
 		
-		Map<Car,CarType> cars = new HashMap<>();
+		List<CarTypeCarMapping> cars = new ArrayList<>();
 		int carId = 1;
 
 		//open file from jar
@@ -100,9 +103,11 @@ public class CarRentalServletContextListener implements ServletContextListener {
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()));
 			//create N new cars with given type, where N is the 5th field
+			List<Car> carsOfThisType = new ArrayList<>();
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-				cars.put(new Car(carId++/*, type*/), type);
+				carsOfThisType.add(new Car(carId++));
 			}
+			cars.add(new CarTypeCarMapping(type, carsOfThisType));
 		}
 
 		return cars;

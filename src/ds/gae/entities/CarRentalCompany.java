@@ -1,5 +1,6 @@
 package ds.gae.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +31,8 @@ public class CarRentalCompany {
 	//private Set<Car> cars;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	private Map<Car,CarType> cars = new HashMap<Car, CarType>();
+	//private Map<Car,CarType> cars = new HashMap<>();
+	private List<CarTypeCarMapping> cars = new ArrayList<>();
 	
 	//@OneToMany(cascade = CascadeType.ALL)
 	//private Map<String,CarType> carTypes = new HashMap<String, CarType>();
@@ -39,13 +41,10 @@ public class CarRentalCompany {
 	 * CONSTRUCTOR *
 	 ***************/
 
-	public CarRentalCompany(String name, Map<Car,CarType> cars) {
+	public CarRentalCompany(String name, List<CarTypeCarMapping> cars) {
 		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
 		setName(name);
 		this.cars = cars;
-		/*for(Car car : cars) {
-			carTypes.put(car.getType().getName(), car.getType());
-		}*/
 	}
 
 	/********
@@ -65,12 +64,17 @@ public class CarRentalCompany {
 	 *************/
 
 	public Collection<CarType> getAllCarTypes() {
-		return new HashSet<>(cars.values());
+		Set<CarType> types = new HashSet<CarType>();
+		for (CarTypeCarMapping mapping : cars) {
+			types.add(mapping.getType());
+		}
+		return types;
+		//return new HashSet<>(cars.values());
 	}
 	
 	private Map<String, CarType> getNameToCarTypeMapping() {
 		Map<String, CarType> mapping = new HashMap<>();
-		for (CarType type : cars.values()) {
+		for (CarType type : getAllCarTypes()) {
 			mapping.put(type.getName(), type);
 		}
 		return mapping;
@@ -108,9 +112,12 @@ public class CarRentalCompany {
 				availableCarTypes.add(car.getType());
 			}
 		}*/
-		for (Car car : cars.keySet()) {
-			if (car.isAvailable(start, end)) {
-				availableCarTypes.add(cars.get(car));
+		for (CarTypeCarMapping mapping : cars) {
+			for (Car car : mapping.getCars()) {
+				if (car.isAvailable(start, end)) {
+					availableCarTypes.add(mapping.getType());
+					break;
+				}
 			}
 		}
 		return availableCarTypes;
@@ -121,22 +128,31 @@ public class CarRentalCompany {
 	 *********/
 	
 	private Car getCar(int uid) {
-		for (Car car : cars.keySet()) {
-			if (car.getId() == uid)
-				return car;
+		for (CarTypeCarMapping mapping : cars) {
+			for (Car car : mapping.getCars()) {
+				if (car.getId() == uid) {
+					return car;
+				}
+			}
 		}
 		throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
 	}
 	
 	public Set<Car> getCars() {
-    	return cars.keySet();
+		Set<Car> carSet = new HashSet<>();
+		
+		for (CarTypeCarMapping mapping : cars) {
+			carSet.addAll(mapping.getCars());
+		}
+		
+    	return carSet;
     }
 	
 	public List<Car> getCars(String carType) {
 		List<Car> carsOfType = new LinkedList<Car>();
-		for (Car car : cars.keySet()) {
-			if (cars.get(car).getName().equals(carType)) {
-				carsOfType.add(car);
+		for (CarTypeCarMapping mapping : cars) {
+			if (mapping.getType().getName().equals(carType)) {
+				carsOfType.addAll(mapping.getCars());
 			}
 		}
 		return carsOfType;
@@ -144,9 +160,13 @@ public class CarRentalCompany {
 	
 	private List<Car> getAvailableCars(String carType, Date start, Date end) {
 		List<Car> availableCars = new LinkedList<Car>();
-		for (Car car : cars.keySet()) {
-			if (cars.get(car).getName().equals(carType) && car.isAvailable(start, end)) {
-				availableCars.add(car);
+		for (CarTypeCarMapping mapping : cars) {
+			if (mapping.getType().getName().equals(carType)) {
+				for (Car car : mapping.getCars()) {
+					if (car.isAvailable(start, end)) {
+						availableCars.add(car);
+					}
+				}
 			}
 		}
 		return availableCars;
