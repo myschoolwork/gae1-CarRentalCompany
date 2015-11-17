@@ -68,6 +68,14 @@ public class CarRentalCompany {
 		return new HashSet<>(cars.values());
 	}
 	
+	private Map<String, CarType> getNameToCarTypeMapping() {
+		Map<String, CarType> mapping = new HashMap<>();
+		for (CarType type : cars.values()) {
+			mapping.put(type.getName(), type);
+		}
+		return mapping;
+	}
+	
 	public CarType getCarType(String carTypeName) {
 		for (CarType type : getAllCarTypes()) {
 			if (type.getName().equals(carTypeName)) {
@@ -84,13 +92,13 @@ public class CarRentalCompany {
 		logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
 		//if(carTypes.containsKey(carTypeName))
 		//	return getAvailableCarTypes(start, end).contains(carTypes.get(carTypeName));
-		try {
-			getCarType(carTypeName); //bit of an ugly way to check if it exists (throws if not)
-			return getAvailableCarTypes(start, end).contains(carTypeName);
+		
+		Map<String, CarType> mapping = getNameToCarTypeMapping();
+		if(mapping.containsKey(carTypeName)) {
+			return getAvailableCarTypes(start, end).contains(mapping.get(carTypeName));
 		}
-		catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
-		}
+		
+		throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
 	}
 	
 	public Set<CarType> getAvailableCarTypes(Date start, Date end) {

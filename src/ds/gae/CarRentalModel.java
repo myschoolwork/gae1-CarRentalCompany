@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import ds.gae.entities.Car;
@@ -92,9 +93,7 @@ public class CarRentalModel {
 	 */
     public Quote createQuote(String company, String renterName, ReservationConstraints constraints) throws ReservationException {
 		// FIXME: use persistence instead
-    	return null;
-    	
-    	/*EntityManager em = ds.gae.EMF.get().createEntityManager();
+    	EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			CarRentalCompany crc =  getCompany(company, em);
 	    	Quote out = null;
@@ -105,13 +104,11 @@ public class CarRentalModel {
 	        	throw new ReservationException("CarRentalCompany not found.");    	
 	        }
 	        
-	        // TODO More JPQL-ish?
-	        
 	        return out;
 		}
 		finally {
 			em.close();
-		}*/
+		}
     }
     
 	/**
@@ -126,15 +123,19 @@ public class CarRentalModel {
 	public void confirmQuote(Quote q) throws ReservationException {
 		// FIXME: use persistence instead
 		
-		/*EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
 		try {
 			CarRentalCompany crc =  getCompany(q.getRentalCompany(), em);
 	    	crc.confirmQuote(q);
-	    	em.persist(crc);
 		}
 		finally {
+			if (tx.isActive()) {
+				tx.rollback();
+			}
 			em.close();
-		}*/
+		}
 	}
 	
     /**
