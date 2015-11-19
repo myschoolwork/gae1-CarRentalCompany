@@ -92,7 +92,7 @@ public class CarRentalModel {
 	 * 			No car available that fits the given constraints.
 	 */
     public Quote createQuote(String company, String renterName, ReservationConstraints constraints) throws ReservationException {
-		// FIXME: use persistence instead
+		// FIXEDME: use persistence instead
     	EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			CarRentalCompany crc =  getCompany(company, em);
@@ -121,7 +121,7 @@ public class CarRentalModel {
 	 * 			Confirmation of given quote failed.	
 	 */
 	public void confirmQuote(Quote q) throws ReservationException {
-		// FIXME: use persistence instead
+		// FIXEDME: use persistence instead
 		
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		EntityTransaction tx = em.getTransaction();
