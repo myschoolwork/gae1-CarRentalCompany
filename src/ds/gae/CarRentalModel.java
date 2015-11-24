@@ -120,17 +120,19 @@ public class CarRentalModel {
 	 */
 	public void confirmQuote(Quote q) throws ReservationException {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
+		Reservation res = null;
 		try {
 			CarRentalCompany crc =  getCompany(q.getRentalCompany(), em);
-	    	crc.confirmQuote(q);
-	    	tx.commit();
+	    	res = crc.confirmQuote(q);
+		}
+		catch (ReservationException e) {
+			if (res != null) {
+				CarRentalCompany crc =  getCompany(res.getRentalCompany(), em);
+		    	crc.cancelReservation(res);
+			}
+			throw e;
 		}
 		finally {
-			if (tx.isActive()) {
-				tx.rollback();
-			}
 			em.close();
 		}
 	}
@@ -147,23 +149,38 @@ public class CarRentalModel {
 	 * 			Therefore none of the given quotes is confirmed.
 	 */
     public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
-		EntityManager em = ds.gae.EMF.get().createEntityManager();
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
+		//EntityManager em = ds.gae.EMF.get().createEntityManager();
+		//EntityTransaction tx = em.getTransaction();
+		//tx.begin();
+		List<Reservation> ress = new ArrayList<>();
 		try {
-			List<Reservation> ress = new ArrayList<>();
 			for (Quote q : quotes) {
+				EntityManager em = ds.gae.EMF.get().createEntityManager();
+				
 				CarRentalCompany crc =  getCompany(q.getRentalCompany(), em);
 				ress.add(crc.confirmQuote(q));
+				
+				em.close();
 			}
-	    	tx.commit();
+	    	//tx.commit();
 	    	return ress;
 		}
-		finally {
-			if (tx.isActive()) {
-				tx.rollback();
+		catch (ReservationException e) {
+			for (Reservation r : ress) {
+				EntityManager em = ds.gae.EMF.get().createEntityManager();
+				
+				CarRentalCompany crc =  getCompany(r.getRentalCompany(), em);
+				crc.cancelReservation(r);
+				
+				em.close();
 			}
-			em.close();
+			throw e;
+		}
+		finally {
+			/*if (tx.isActive()) {
+				tx.rollback();
+			}*/
+			//em.close();
 		}
     	
     	//return null;

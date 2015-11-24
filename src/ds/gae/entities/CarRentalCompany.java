@@ -32,7 +32,7 @@ public class CarRentalCompany {
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	//private Map<Car,CarType> cars = new HashMap<>();
-	private List<CarType> carsTypes = new ArrayList<>();
+	private List<CarType> carTypes = new ArrayList<>();
 	
 	//@OneToMany(cascade = CascadeType.ALL)
 	//private Map<String,CarType> carTypes = new HashMap<String, CarType>();
@@ -41,10 +41,10 @@ public class CarRentalCompany {
 	 * CONSTRUCTOR *
 	 ***************/
 
-	public CarRentalCompany(String name, List<CarType> carsTypes) {
+	public CarRentalCompany(String name, List<CarType> carTypes) {
 		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
 		setName(name);
-		this.carsTypes = carsTypes;
+		this.carTypes = carTypes;
 	}
 
 	/********
@@ -64,7 +64,7 @@ public class CarRentalCompany {
 	 *************/
 
 	public Collection<CarType> getAllCarTypes() {
-		return new HashSet<>(carsTypes);
+		return new HashSet<>(carTypes);
 	}
 	
 	private Map<String, CarType> getNameToCarTypeMapping() {
@@ -107,7 +107,7 @@ public class CarRentalCompany {
 				availableCarTypes.add(car.getType());
 			}
 		}*/
-		for (CarType type : carsTypes) {
+		for (CarType type : carTypes) {
 			for (Car car : type.getCars()) {
 				if (car.isAvailable(start, end)) {
 					availableCarTypes.add(type);
@@ -123,7 +123,7 @@ public class CarRentalCompany {
 	 *********/
 	
 	private Car getCar(int uid) {
-		for (CarType type : carsTypes) {
+		for (CarType type : carTypes) {
 			for (Car car : type.getCars()) {
 				if (car.getId() == uid) {
 					return car;
@@ -136,7 +136,7 @@ public class CarRentalCompany {
 	public Set<Car> getCars() {
 		Set<Car> carSet = new HashSet<>();
 		
-		for (CarType type : carsTypes) {
+		for (CarType type : carTypes) {
 			carSet.addAll(type.getCars());
 		}
 		
@@ -146,7 +146,7 @@ public class CarRentalCompany {
 	public List<Car> getCars(String carType) {
 		List<Car> carsOfType = new LinkedList<Car>();
 		
-		for (CarType type : carsTypes) {
+		for (CarType type : carTypes) {
 			if (type.getName().equals(carType)) {
 				return type.getCars();
 			}
@@ -156,7 +156,7 @@ public class CarRentalCompany {
 	
 	private List<Car> getAvailableCars(String carType, Date start, Date end) {
 		
-		for (CarType type : carsTypes) {
+		for (CarType type : carTypes) {
 			if (type.getName().equals(carType)) {
 				List<Car> availableCars = new LinkedList<Car>();
 				for (Car car : type.getCars()) {
