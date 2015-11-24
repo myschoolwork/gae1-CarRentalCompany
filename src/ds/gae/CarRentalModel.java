@@ -65,8 +65,7 @@ public class CarRentalModel {
      * @return	the list of car rental companies
      */
     public Collection<String> getAllRentalCompanyNames() {
-		// FIXEDME use persistence instead
-    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			Query q = em.createQuery("SELECT c.name FROM " + CarRentalCompany.class.getName() + " c" );
 			return q.getResultList();
@@ -92,8 +91,7 @@ public class CarRentalModel {
 	 * 			No car available that fits the given constraints.
 	 */
     public Quote createQuote(String company, String renterName, ReservationConstraints constraints) throws ReservationException {
-		// FIXEDME: use persistence instead
-    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			CarRentalCompany crc =  getCompany(company, em);
 	    	Quote out = null;
@@ -121,8 +119,6 @@ public class CarRentalModel {
 	 * 			Confirmation of given quote failed.	
 	 */
 	public void confirmQuote(Quote q) throws ReservationException {
-		// FIXEDME: use persistence instead
-		
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
@@ -151,9 +147,26 @@ public class CarRentalModel {
 	 * 			Therefore none of the given quotes is confirmed.
 	 */
     public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
-		// TODO add implementation
-    	System.out.println("--- confirmQuotes");
-    	return null;
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityTransaction tx = em.getTransaction();
+		tx.begin();
+		try {
+			List<Reservation> ress = new ArrayList<>();
+			for (Quote q : quotes) {
+				CarRentalCompany crc =  getCompany(q.getRentalCompany(), em);
+				ress.add(crc.confirmQuote(q));
+			}
+	    	tx.commit();
+	    	return ress;
+		}
+		finally {
+			if (tx.isActive()) {
+				tx.rollback();
+			}
+			em.close();
+		}
+    	
+    	//return null;
     }
 	
 	/**
@@ -164,9 +177,7 @@ public class CarRentalModel {
 	 * @return	the list of reservations of the given car renter
 	 */
 	public List<Reservation> getReservations(String renter) {
-		// FIXEDME: use persistence instead
-    	
-    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			/*Query q = em.createQuery("SELECT r "
 					+ "FROM " + Reservation.class.getName() + " r "
@@ -174,7 +185,6 @@ public class CarRentalModel {
 					Reservation.class)
 				.setParameter("renter", renter);
 			return q.getResultList();*/
-			// TODO More JPQL-ish?
 			List<Reservation> out = new ArrayList<Reservation>();
 			
 			Query q = em.createQuery("SELECT c FROM " + CarRentalCompany.class.getName() + " c", CarRentalCompany.class);
@@ -204,16 +214,13 @@ public class CarRentalModel {
      * @return	The list of car types in the given car rental company.
      */
     public Collection<CarType> getCarTypesOfCarRentalCompany(String crcName) {
-		// FIXEDME: use persistence instead
-    	
-    	EntityManager em = ds.gae.EMF.get().createEntityManager();
+		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			/*Query q = em.createQuery("SELECT ct "
 					+ "FROM CarRentalCompany c, IN(c.carTypes) ct "
 					+ "WHERE c.name LIKE :crcName")
 				.setParameter("crcName", crcName);*/
 			return getCompany(crcName, em).getAllCarTypes();
-			// TODO More JPQL-ish?
 		}
 		finally {
 			em.close();
@@ -260,8 +267,6 @@ public class CarRentalModel {
 	 * @return	List of cars of the given car type
 	 */
 	private List<Car> getCarsByCarType(String crcName, CarType carType) {				
-		// FIXEDME: use persistence instead
-		
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			/*Query q = em.createQuery("SELECT c "
