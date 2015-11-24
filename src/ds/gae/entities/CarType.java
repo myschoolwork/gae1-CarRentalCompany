@@ -1,9 +1,15 @@
 package ds.gae.entities;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -21,16 +27,20 @@ public class CarType {
     //trunk space in liters
     private float trunkSpace;
     
+    @OneToMany(cascade = CascadeType.ALL)
+	private List<Car> cars;
+    
     /***************
 	 * CONSTRUCTOR *
 	 ***************/
     
-    public CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
+    public CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed, List<Car> cars) {
         this.name = name;
         this.nbOfSeats = nbOfSeats;
         this.trunkSpace = trunkSpace;
         this.rentalPricePerDay = rentalPricePerDay;
         this.smokingAllowed = smokingAllowed;
+        this.cars = cars;
     }
 
     public String getName() {
@@ -51,6 +61,10 @@ public class CarType {
     
     public float getTrunkSpace() {
     	return trunkSpace;
+    }
+    
+    public List<Car> getCars() {
+    	return new ArrayList<Car>(cars);
     }
     
     /*************

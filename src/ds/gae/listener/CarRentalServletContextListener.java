@@ -19,7 +19,6 @@ import javax.servlet.ServletContextListener;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
-import ds.gae.entities.CarTypeCarMapping;
 
 public class CarRentalServletContextListener implements ServletContextListener {
 
@@ -61,8 +60,8 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
         	
-			List<CarTypeCarMapping> cars = loadData(name, datafile);
-            CarRentalCompany company = new CarRentalCompany(name, cars);
+			List<CarType> types = loadData(name, datafile);
+            CarRentalCompany company = new CarRentalCompany(name, types);
             
     		// FIXEDME: use persistence instead
             //CarRentalModel.get().CRCS.put(name, company);
@@ -78,10 +77,10 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		}
 	}
 	
-	public static List<CarTypeCarMapping> loadData(String name, String datafile) throws NumberFormatException, IOException {
+	public static List<CarType> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		// FIXEDME: adapt the implementation of this method to your entity structure
 		
-		List<CarTypeCarMapping> cars = new ArrayList<>();
+		List<CarType> types = new ArrayList<>();
 		int carId = 1;
 
 		//open file from jar
@@ -97,20 +96,25 @@ public class CarRentalServletContextListener implements ServletContextListener {
 			//tokenize on ,
 			StringTokenizer csvReader = new StringTokenizer(line, ",");
 			//create new car type from first 5 fields
-			CarType type = new CarType(csvReader.nextToken(),
-					Integer.parseInt(csvReader.nextToken()),
-					Float.parseFloat(csvReader.nextToken()),
-					Double.parseDouble(csvReader.nextToken()),
-					Boolean.parseBoolean(csvReader.nextToken()));
+			
+			String typeName = csvReader.nextToken();
+			int nbOfSeats = Integer.parseInt(csvReader.nextToken());
+			float trunkSpace = Float.parseFloat(csvReader.nextToken());
+			double rentalPricePerDay = Double.parseDouble(csvReader.nextToken());
+			boolean smokingAllowed = Boolean.parseBoolean(csvReader.nextToken());
 			//create N new cars with given type, where N is the 5th field
 			List<Car> carsOfThisType = new ArrayList<>();
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
 				carsOfThisType.add(new Car(carId++));
 			}
-			cars.add(new CarTypeCarMapping(type, carsOfThisType));
+			
+			CarType type = new CarType(typeName,
+					nbOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed,
+					carsOfThisType);
+			types.add(type);
 		}
 
-		return cars;
+		return types;
 	}
 
 	@Override
