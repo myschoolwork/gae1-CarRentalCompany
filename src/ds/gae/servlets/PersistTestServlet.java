@@ -23,7 +23,7 @@ public class PersistTestServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String companyName = "Hertz";
-		String userName = "Pieter A.";
+		String userName = "TestUser";
 		
 		req.getSession().setAttribute("renter", userName);
 		
