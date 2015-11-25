@@ -10,9 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.TaskOptions;
+
 import ds.gae.CarRentalModel;
 import ds.gae.ReservationException;
 import ds.gae.entities.Quote;
+import ds.gae.tasks.ConfirmQuotesTask;
 import ds.gae.view.ViewTools;
 import ds.gae.view.JSPSite;
 
@@ -27,7 +32,7 @@ public class ConfirmQuotesServlet extends HttpServlet {
 		HttpSession session = req.getSession();
 		HashMap<String, ArrayList<Quote>> allQuotes = (HashMap<String, ArrayList<Quote>>) session.getAttribute("quotes");
 
-		try {
+		//try {
 			ArrayList<Quote> qs = new ArrayList<Quote>();
 			
 			for (String crcName : allQuotes.keySet()) {
@@ -35,7 +40,13 @@ public class ConfirmQuotesServlet extends HttpServlet {
 			}
 			
 			// TODO Use google queues
-			CarRentalModel.get().confirmQuotes(qs);
+			Queue queue = QueueFactory.getDefaultQueue();
+			//queue.add(TaskOptions.Builder.withUrl("/worker").param("quotes", qs)); //use deferred task
+			// delay 5 seconds for testing
+			queue.add(TaskOptions.Builder.withPayload(new ConfirmQuotesTask(qs))
+				      .etaMillis(System.currentTimeMillis() + 5 * 1000));
+
+			//CarRentalModel.get().confirmQuotes(qs); //done in task now
 			
 			// Clear current quotes
 			session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
@@ -46,9 +57,10 @@ public class ConfirmQuotesServlet extends HttpServlet {
 			// with 
 			resp.sendRedirect(JSPSite.CONFIRM_QUOTES_RESPONSE.url());
 			//resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
-		} catch (ReservationException e) {
+			
+		/*} catch (ReservationException e) {
 			session.setAttribute("errorMsg", ViewTools.encodeHTML(e.getMessage()));
 			resp.sendRedirect(JSPSite.RESERVATION_ERROR.url());				
-		}
+		}*/
 	}
 }

@@ -14,5 +14,6 @@ public class Worker extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		super.doPost(req, resp);		
+		//Since I use deferred task I don't use this.
 	}
 }
