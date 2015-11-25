@@ -50,11 +50,13 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
    }
  %>
 			<div class="frameDiv" style="margin: 150px 150px;">
-				<H2>Reply</H2>
+				<H2>Dear <%=renter%></H2>
 				<div class="group">
 					<p>
-					TODO: Here you can give some information to client who is currently 
-							logged in as user <%=renter%>.
+					<!-- TODO: Here you can give some information to client who is currently 
+							logged in as user <%=renter%>.  -->
+					your quotes are being processed. Please wait for a confirmation email or something.
+					Your reservation is NOT final until you received this confirmation.
 					</p>
 				</div>
 			</div>
