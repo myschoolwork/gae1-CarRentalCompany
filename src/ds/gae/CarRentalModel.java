@@ -118,7 +118,7 @@ public class CarRentalModel {
 	 * @throws ReservationException
 	 * 			Confirmation of given quote failed.	
 	 */
-	public void confirmQuote(Quote q) throws ReservationException {
+	synchronized public void confirmQuote(Quote q) throws ReservationException {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		Reservation res = null;
 		try {
@@ -148,7 +148,7 @@ public class CarRentalModel {
 	 * 			One of the quotes cannot be confirmed. 
 	 * 			Therefore none of the given quotes is confirmed.
 	 */
-    public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
+	synchronized public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
 		//EntityManager em = ds.gae.EMF.get().createEntityManager();
 		//EntityTransaction tx = em.getTransaction();
 		//tx.begin();
