@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.appengine.api.utils.SystemProperty;
 
 import ds.gae.CarRentalModel;
 import ds.gae.ReservationException;
@@ -16,22 +15,20 @@ import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 
 public class ConfirmQuotesTask implements DeferredTask {
 	
 	private List<Quote> quotes = new ArrayList<>();
+	private String userEmail;
 	
-	public ConfirmQuotesTask(List<Quote> quotes) {
+	public ConfirmQuotesTask(List<Quote> quotes, String userEmail) {
 		this.quotes.addAll(quotes);
+		this.userEmail = userEmail;
 	}
 
 	@Override
@@ -69,7 +66,7 @@ public class ConfirmQuotesTask implements DeferredTask {
 			Message msg = new MimeMessage(session);
 			//In a real app the 'from' email should be authorized in the GAE Settings Page online.
 			msg.setFrom(new InternetAddress("info@carrental.appspotmail.com", "Car Rental Information Office"));
-		    msg.addRecipient(Message.RecipientType.TO, new InternetAddress("pablo.bollansee@gmail.com", "Mr. You"));
+		    msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEmail, userEmail));
 		    msg.setSubject(subject);
 		    msg.setText(body);
 		    //for some reason the logging of the email doesn't show the body, however it does show the data-length,

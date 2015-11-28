@@ -16,10 +16,12 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String username = req.getParameter("username");
+		String email = req.getParameter("email");
 		if (username == null || username.length() == 0) {			
 			resp.sendRedirect(JSPSite.LOGIN.url());
 		} else {
 			req.getSession().setAttribute("renter", username);
+			req.getSession().setAttribute("email", email);
 			JSPSite caller = (JSPSite) req.getSession().getAttribute("lastSiteCall");
 			if (caller == null) {
 				resp.sendRedirect(JSPSite.CREATE_QUOTES.url());

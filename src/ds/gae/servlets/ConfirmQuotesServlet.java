@@ -31,6 +31,8 @@ public class ConfirmQuotesServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession();
 		HashMap<String, ArrayList<Quote>> allQuotes = (HashMap<String, ArrayList<Quote>>) session.getAttribute("quotes");
+		
+		String email = (String)session.getAttribute("email");
 
 		//try {
 			ArrayList<Quote> qs = new ArrayList<Quote>();
@@ -39,11 +41,11 @@ public class ConfirmQuotesServlet extends HttpServlet {
 				qs.addAll(allQuotes.get(crcName));
 			}
 			
-			// TODO Use google queues
+			// DONE Use google queues
 			Queue queue = QueueFactory.getDefaultQueue();
 			//queue.add(TaskOptions.Builder.withUrl("/worker").param("quotes", qs)); //use deferred task
 			// delay 5 seconds for testing
-			queue.add(TaskOptions.Builder.withPayload(new ConfirmQuotesTask(qs))
+			queue.add(TaskOptions.Builder.withPayload(new ConfirmQuotesTask(qs, email))
 				      .etaMillis(System.currentTimeMillis() + 5 * 1000));
 
 			//CarRentalModel.get().confirmQuotes(qs); //done in task now
@@ -51,7 +53,7 @@ public class ConfirmQuotesServlet extends HttpServlet {
 			// Clear current quotes
 			session.setAttribute("quotes", new HashMap<String, ArrayList<Quote>>());
 			
-			// TODO
+			// DONE
 			// If you wish confirmQuotesReply.jsp to be shown to the client as
 			// a response of calling this servlet, please replace the following line 
 			// with 
