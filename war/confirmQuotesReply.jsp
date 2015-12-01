@@ -53,7 +53,7 @@ for (JSPSite site : JSPSite.publiclyLinkedValues()) {
 				<H2>Dear <%=renter%></H2>
 				<div class="group">
 					<p>
-					<!-- TODO: Here you can give some information to client who is currently 
+					<!-- DONE: Here you can give some information to client who is currently 
 							logged in as user <%=renter%>.  -->
 					your quotes are being processed. Please wait for a confirmation email or something.
 					Your reservation is NOT final until you received this confirmation.

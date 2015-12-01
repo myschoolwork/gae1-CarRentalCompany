@@ -38,7 +38,6 @@ public class ConfirmQuotesTask implements DeferredTask {
 			
 			List<Reservation> ress = CarRentalModel.get().confirmQuotes(quotes);
 			
-			//TODO: Add info about reservations
 			StringBuilder body = new StringBuilder();
 			body.append("Your reservations were successful!");
 			for (Reservation res : ress) {
