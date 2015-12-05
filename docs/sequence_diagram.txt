@@ -1,0 +1,29 @@
+Sequence diagram
+
+@startuml
+
+actor Renter
+participant FrontEnd
+participant CloudDataStore
+participant DefaultQueue
+participant AppEngineBatchApp
+
+loop As long as user wants to reserve more cars
+	Renter --> FrontEnd : CreateQuote(...)
+	FrontEnd --> CloudDataStore : CreateQuote(...)
+	CloudDataStore --> FrontEnd : return quote
+end
+
+Renter --> FrontEnd : ConfirmQuotes(...)
+FrontEnd --> DefaultQueue : Add(new ConfirmQuotesTask(...))
+
+AppEngineBatchApp --> DefaultQueue : GetTask()
+AppEngineBatchApp --> AppEngineBatchApp : HandlesTask
+
+alt All quotes confirmed
+	AppEngineBatchApp --> Renter : SendConfirmationEmail "Success!"
+else Failed to reserve at least one quote, none were reserved
+	AppEngineBatchApp --> Renter : SendFailEmail "Please retry"
+end
+
+@enduml

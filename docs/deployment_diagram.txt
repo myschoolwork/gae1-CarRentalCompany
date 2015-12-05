@@ -1,0 +1,31 @@
+Deployment diagram
+
+@startuml
+
+node AppEngineFrontEnd {
+	frame Servlets
+	frame JSPFiles
+}
+
+node CloudDatastore {
+	frame CarRentalCompany
+	frame Car
+	frame CarType
+	frame Reservation
+}
+
+node TaskQueues {
+	frame DefaultQueue
+}
+
+node AppEngineBatchApp {
+}
+
+AppEngineFrontEnd -> CloudDatastore
+AppEngineFrontEnd --> TaskQueues
+
+TaskQueues --> AppEngineBatchApp
+
+AppEngineBatchApp --> CloudDatastore
+
+@enduml

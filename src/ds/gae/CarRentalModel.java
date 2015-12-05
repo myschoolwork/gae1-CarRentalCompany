@@ -90,7 +90,7 @@ public class CarRentalModel {
 	 * @throws ReservationException
 	 * 			No car available that fits the given constraints.
 	 */
-    public Quote createQuote(String company, String renterName, ReservationConstraints constraints) throws ReservationException {
+    synchronized public Quote createQuote(String company, String renterName, ReservationConstraints constraints) throws ReservationException {
 		EntityManager em = ds.gae.EMF.get().createEntityManager();
 		try {
 			CarRentalCompany crc =  getCompany(company, em);
